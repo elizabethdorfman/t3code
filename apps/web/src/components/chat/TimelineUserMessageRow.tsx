@@ -1062,12 +1062,12 @@ function UserMessageIntentMarker({
         }
       >
         <Redo2Icon aria-hidden="true" className="size-3" />
-        Steer
+        Sent
       </TooltipTrigger>
       <TooltipPopup side="top">
         {intent === "promoted_queued_to_steer"
-          ? "Originally queued, then promoted to steer the active turn"
-          : "Steered the active turn"}
+          ? "Originally queued, then sent during the active turn"
+          : "Sent during the active turn"}
       </TooltipPopup>
     </Tooltip>
   );
