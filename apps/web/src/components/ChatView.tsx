@@ -57,6 +57,7 @@ import {
   AuthPreviewOperateScope,
   AuthTerminalOperateScope,
   type AssistantCitation,
+  type ResponseContextRecord,
   type ChatFileAttachment,
   isProviderNativeSubagentThread,
   orchestrationV2WorktreePending,
@@ -615,7 +616,7 @@ export default function ChatView(props: ChatViewProps) {
   const branchToolbarRef = useRef<BranchToolbarHandle>(null);
   const citeAssistantText = (
     citation: AssistantCitation,
-    sourceAnchor?: AssistantCitationSourceAnchor,
+    sourceAnchor: AssistantCitationSourceAnchor,
   ) => {
     const inserted = composerRef.current?.citeAssistantText(citation, sourceAnchor) ?? false;
     if (!inserted) {
@@ -628,6 +629,17 @@ export default function ChatView(props: ChatViewProps) {
     return inserted;
   };
   const citeAssistantTextStable = useStableCallback(citeAssistantText);
+  const replyToResponseStable = useStableCallback((response: ResponseContextRecord) => {
+    const accepted = composerRef.current?.replyToResponse(response) ?? false;
+    if (!accepted) {
+      toastManager.add({
+        type: "warning",
+        title: "The composer is not ready",
+        description: "Try replying after the connection or pending input is resolved.",
+      });
+    }
+    return accepted;
+  });
   const [isWorkspaceFileDragActive, setIsWorkspaceFileDragActive] = useState(false);
   const [optimisticBlobPreviews] = useState(createOptimisticBlobPreviews);
   const [heldOptimisticUserMessages, setHeldOptimisticUserMessages] = useState(() =>
@@ -3381,6 +3393,7 @@ export default function ChatView(props: ChatViewProps) {
                   citationRequest={citationRequest}
                   citationHistory={citationHistory}
                   onCiteAssistantText={citeAssistantTextStable}
+                  onReplyToResponse={replyToResponseStable}
                   {...(activeProject
                     ? { onRunShellCommand: parentPanel?.runShellCommand ?? runShellCommandStable }
                     : {})}
